@@ -7,6 +7,7 @@ from project.app import app, db
 
 TEST_DB = "test.db"
 
+
 def login(client, username, password):
     """Login helper function"""
     return client.post(
@@ -19,6 +20,7 @@ def login(client, username, password):
 def logout(client):
     """Logout helper function"""
     return client.get("/logout", follow_redirects=True)
+
 
 def test_index(client):
     response = client.get("/", content_type="html/text")
@@ -61,6 +63,7 @@ def test_messages(client):
     assert b"&lt;Hello&gt;" in rv.data
     assert b"<strong>HTML</strong> allowed here" in rv.data
 
+
 def test_delete_message(client):
     """Ensure the messages are being deleted"""
     rv = client.get("/delete/1")
@@ -71,9 +74,10 @@ def test_delete_message(client):
     data = json.loads(rv.data)
     assert data["status"] == 1
 
+
 def test_search(client):
     login(client, app.config["USERNAME"], app.config["PASSWORD"])
-    entry = client.post(
+    client.post(
         "/add",
         data=dict(title="<A>", text="<strong>HTML</strong> 2"),
         follow_redirects=True,
@@ -81,6 +85,7 @@ def test_search(client):
     rv = client.post("/search/", data="<A>", follow_redirects=True)
     assert b"&lt;A&gt;" not in rv.data
     assert b"<strong>HTML</strong> 2" not in rv.data
+
 
 @pytest.fixture
 def client():
